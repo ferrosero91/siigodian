@@ -21,10 +21,14 @@ env/
 .env
 
 # Base de datos local
-data/
+data/*.db
+data/siigo_dian.db
 *.db
 *.sqlite
 *.sqlite3
+
+# Mantener los CSV de catálogos
+!data/csv/
 
 # Archivos de configuración sensibles
 .env

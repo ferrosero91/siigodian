@@ -434,102 +434,60 @@ def _populate_catalogs(session):
             session.add(TypeLiability(id=id, name=name, code=code))
         session.commit()
     
-    # Departamentos
-    if session.query(Department).count() == 0:
-        data = [
-            (1, "Amazonas", "91"), (2, "Antioquia", "05"), (3, "Arauca", "81"),
-            (4, "Atlántico", "08"), (5, "Bogotá", "11"), (6, "Bolívar", "13"),
-            (7, "Boyacá", "15"), (8, "Caldas", "17"), (9, "Caquetá", "18"),
-            (10, "Casanare", "85"), (11, "Cauca", "19"), (12, "Cesar", "20"),
-            (13, "Chocó", "27"), (14, "Córdoba", "23"), (15, "Cundinamarca", "25"),
-            (16, "Guainía", "94"), (17, "Guaviare", "95"), (18, "Huila", "41"),
-            (19, "La Guajira", "44"), (20, "Magdalena", "47"), (21, "Meta", "50"),
-            (22, "Nariño", "52"), (23, "Norte de Santander", "54"), (24, "Putumayo", "86"),
-            (25, "Quindío", "63"), (26, "Risaralda", "66"), (27, "San Andrés y Providencia", "88"),
-            (28, "Santander", "68"), (29, "Sucre", "70"), (30, "Tolima", "73"),
-            (31, "Valle del Cauca", "76"), (32, "Vaupés", "97"), (33, "Vichada", "99"),
-        ]
-        for id, name, code in data:
-            session.add(Department(id=id, name=name, code=code))
-        session.commit()
+    # Departamentos y Municipios - importar desde CSV si están vacíos
+    if session.query(Department).count() == 0 or session.query(Municipality).count() == 0:
+        _import_geo_catalogs(session)
+
+
+def _import_geo_catalogs(session):
+    """Importar departamentos y municipios desde CSV"""
+    import os
     
-    # Municipios principales
-    if session.query(Municipality).count() == 0:
-        data = [
-            # Bogotá
-            (149, 5, "Bogotá D.C.", "11001", "12688"),
-            # Antioquia
-            (1, 2, "Medellín", "05001", "12601"),
-            (19, 2, "Bello", "05088", "12549"),
-            (47, 2, "Envigado", "05266", "12578"),
-            (59, 2, "Itagüí", "05360", "12590"),
-            (85, 2, "Rionegro", "05615", "12617"),
-            # Atlántico
-            (168, 4, "Barranquilla", "08001", "12688"),
-            # Bolívar
-            (211, 6, "Cartagena", "13001", "12688"),
-            # Valle del Cauca
-            (799, 31, "Cali", "76001", "12688"),
-            (815, 31, "Palmira", "76520", "12688"),
-            (805, 31, "Buenaventura", "76109", "12688"),
-            # Santander
-            (680, 28, "Bucaramanga", "68001", "12688"),
-            (688, 28, "Floridablanca", "68276", "12688"),
-            # Nariño
-            (520, 22, "Pasto", "52001", "12688"),
-            (533, 22, "Ipiales", "52356", "12688"),
-            (541, 22, "Tumaco", "52835", "12688"),
-            # Norte de Santander
-            (571, 23, "Cúcuta", "54001", "12688"),
-            # Risaralda
-            (615, 26, "Pereira", "66001", "12688"),
-            (617, 26, "Dosquebradas", "66170", "12688"),
-            # Tolima
-            (758, 30, "Ibagué", "73001", "12688"),
-            # Cundinamarca
-            (335, 15, "Soacha", "25754", "12688"),
-            (312, 15, "Chía", "25175", "12688"),
-            (369, 15, "Zipaquirá", "25899", "12688"),
-            # Huila
-            (396, 18, "Neiva", "41001", "12688"),
-            # Caldas
-            (276, 8, "Manizales", "17001", "12688"),
-            # Quindío
-            (608, 25, "Armenia", "63001", "12688"),
-            # Meta
-            (483, 21, "Villavicencio", "50001", "12688"),
-            # Córdoba
-            (321, 14, "Montería", "23001", "12688"),
-            # Cesar
-            (302, 12, "Valledupar", "20001", "12688"),
-            # Magdalena
-            (468, 20, "Santa Marta", "47001", "12688"),
-            # Cauca
-            (290, 11, "Popayán", "19001", "12688"),
-            # Boyacá
-            (252, 7, "Tunja", "15001", "12688"),
-            (260, 7, "Duitama", "15238", "12688"),
-            (264, 7, "Sogamoso", "15759", "12688"),
-            # Caquetá
-            (295, 9, "Florencia", "18001", "12688"),
-            # La Guajira
-            (443, 19, "Riohacha", "44001", "12688"),
-            # Sucre
-            (726, 29, "Sincelejo", "70001", "12688"),
-            # Arauca
-            (156, 3, "Arauca", "81001", "12688"),
-            # Casanare
-            (298, 10, "Yopal", "85001", "12688"),
-            # Putumayo
-            (600, 24, "Mocoa", "86001", "12688"),
-            # Amazonas
-            (150, 1, "Leticia", "91001", "12688"),
-            # Chocó
-            (308, 13, "Quibdó", "27001", "12688"),
-        ]
-        for id, dept_id, name, code, codefact in data:
-            session.add(Municipality(id=id, department_id=dept_id, name=name, code=code, codefacturador=codefact))
+    # Buscar CSV en data/csv del proyecto
+    csv_path = os.path.join(os.path.dirname(__file__), 'data', 'csv')
+    
+    def read_csv(filename):
+        filepath = os.path.join(csv_path, filename)
+        if not os.path.exists(filepath):
+            return []
+        data = []
+        for encoding in ['utf-8', 'latin-1', 'cp1252']:
+            try:
+                with open(filepath, 'r', encoding=encoding) as f:
+                    for line in f:
+                        line = line.strip()
+                        if line:
+                            data.append(line.split('\t'))
+                break
+            except UnicodeDecodeError:
+                continue
+        return data
+    
+    # Limpiar tablas (municipios primero por FK)
+    session.query(Municipality).delete()
+    session.query(Department).delete()
+    session.commit()
+    
+    # Importar departamentos
+    dept_data = read_csv('departments.csv')
+    if dept_data:
+        for row in dept_data:
+            if len(row) >= 3:
+                session.add(Department(id=int(row[0]), name=row[2], code=row[3] if len(row) > 3 else str(row[0])))
         session.commit()
+        print(f"Importados {session.query(Department).count()} departamentos desde CSV")
+    
+    # Importar municipios
+    muni_data = read_csv('municipalities.csv')
+    if muni_data:
+        for row in muni_data:
+            if len(row) >= 4:
+                session.add(Municipality(
+                    id=int(row[0]), department_id=int(row[1]), name=row[2].strip(),
+                    code=row[3], codefacturador=row[4] if len(row) > 4 else None
+                ))
+        session.commit()
+        print(f"Importados {session.query(Municipality).count()} municipios desde CSV")
 
 
 def get_session():

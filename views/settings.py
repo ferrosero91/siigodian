@@ -92,8 +92,8 @@ class SettingsView:
             [ft.dropdown.Option(str(k), v) for k, v in self.catalogs["departments"].items()], width=250, on_change=self._on_department_change)
         dept_id = self.settings.department_id or 22
         muni_options = [ft.dropdown.Option(str(m.id), m.name) for m in self.catalogs["municipalities"] if m.department_id == dept_id]
-        self.fields["municipality_id"] = dropdown("Municipio", str(self.settings.municipality_id or 520),
-            muni_options if muni_options else [ft.dropdown.Option("520", "Pasto")], width=250)
+        self.fields["municipality_id"] = dropdown("Municipio", str(self.settings.municipality_id or 716),
+            muni_options if muni_options else [ft.dropdown.Option("716", "Pasto")], width=250)
         self.fields["company_address"] = text_field("Dirección", self.settings.company_address or "")
         self.fields["company_phone"] = text_field("Teléfono", self.settings.company_phone or "", width=180)
         self.fields["company_email"] = text_field("Email", self.settings.company_email or "", width=300)
