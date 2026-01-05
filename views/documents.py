@@ -382,7 +382,7 @@ class DocumentsView:
                 ft.Row(actions, expand=True, spacing=0),
             ], spacing=8),
             padding=ft.padding.symmetric(horizontal=16, vertical=10),
-            bgcolor="#1a0a0a" if getattr(doc, 'is_nullified', False) else COLORS["bg_card"],
+            bgcolor=COLORS["bg_card"],
             border=ft.border.only(bottom=ft.BorderSide(1, COLORS["border"])),
             on_hover=lambda e: self._on_hover(e),
         )
