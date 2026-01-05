@@ -720,11 +720,22 @@ class ApiDianService:
         }
     
     def _build_payment(self, payment: dict) -> dict:
+        payment_form_id = payment.get("payment_form_id", 1)
+        payment_method_id = payment.get("payment_method_id", 10)
+        
+        # Para crédito, usar la fecha de vencimiento del XML; para contado, usar fecha actual
+        if payment_form_id == 2:  # Crédito
+            due_date = payment.get("payment_due_date") or datetime.now().strftime("%Y-%m-%d")
+            duration = str(payment.get("duration_measure", 30))  # Días de crédito
+        else:  # Contado
+            due_date = datetime.now().strftime("%Y-%m-%d")
+            duration = "0"
+        
         return {
-            "payment_form_id": payment.get("payment_form_id", 1),
-            "payment_method_id": payment.get("payment_method_id", 10),
-            "payment_due_date": payment.get("payment_due_date", datetime.now().strftime("%Y-%m-%d")),
-            "duration_measure": "0",
+            "payment_form_id": payment_form_id,
+            "payment_method_id": payment_method_id,
+            "payment_due_date": due_date,
+            "duration_measure": duration,
         }
     
     def _build_ds_payment(self, payment: dict) -> dict:

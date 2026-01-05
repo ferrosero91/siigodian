@@ -1460,6 +1460,16 @@ class DocumentsView:
         c.drawRightString(TICKET_WIDTH - MARGIN, y, f"${total:,.0f}")
         y -= LINE_HEIGHT * 1.2
         
+        # ========== FORMA DE PAGO ==========
+        payment_info = parsed_data.get("payment", {})
+        payment_name = payment_info.get("payment_name", "Contado")
+        payment_form_id = payment_info.get("payment_form_id", 1)
+        forma_pago = "Crédito" if payment_form_id == 2 else "Contado"
+        
+        c.setFont(FONT, 7)
+        c.drawString(MARGIN, y, f"Forma de Pago: {forma_pago} - {payment_name}")
+        y -= LINE_HEIGHT
+        
         space(2)
         
         # ========== RESOLUCIÓN DIAN ==========

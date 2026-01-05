@@ -300,22 +300,39 @@ class SiigoXmlParser:
         """Construir información de pago"""
         payment = self.payment_data[0] if self.payment_data else {}
         
-        payment_code = payment.get('0047', 'F')
-        payment_form_id = 2 if payment_code == 'C' else 1  # C=Crédito, F=Contado
+        # Código de forma de pago de Siigo (campo 0045)
+        siigo_payment_code = payment.get('0045', '0080').strip()
         
-        method_code = payment.get('0045', '')
-        payment_method_map = {
-            '0010': 10,  # Efectivo
-            '0020': 20,  # Cheque
-            '0030': 30,  # Transferencia
-            '0047': 47,  # Tarjeta débito
-            '0048': 48,  # Tarjeta crédito
+        # Mapeo de códigos de Siigo a DIAN
+        # payment_form_id: 1=Contado, 2=Crédito
+        # payment_method_id: 10=Efectivo, 48=Tarjeta Crédito, 49=Tarjeta Débito, etc.
+        payment_mapping = {
+            # Contado
+            '0080': {'form': 1, 'method': 10, 'name': 'Contado'},           # CONTADO CLIENTES
+            '0090': {'form': 1, 'method': 10, 'name': 'Contado'},           # CONTADO PROVEEDORES
+            # Crédito
+            '0001': {'form': 2, 'method': 10, 'name': 'Crédito'},           # CREDITO CLIENTES NACIONALES
+            '0020': {'form': 2, 'method': 10, 'name': 'Crédito'},           # CREDITO PROVEEDORES NACIONALES
+            # Tarjetas
+            '0010': {'form': 1, 'method': 48, 'name': 'Tarjeta Visa'},      # TARJETA VISA
+            '0011': {'form': 1, 'method': 48, 'name': 'Tarjeta Amex'},      # TARJETA AMERICAN EXP
+            '0012': {'form': 1, 'method': 48, 'name': 'Tarjeta Mastercard'},# TARJETA MASTERCARD
+            # Anticipos
+            '0040': {'form': 1, 'method': 10, 'name': 'Anticipo'},          # ANTICIPO CLIENTES
+            '0060': {'form': 1, 'method': 10, 'name': 'Anticipo'},          # ANTICIPO PROVEEDORES
         }
-        payment_method_id = payment_method_map.get(method_code, 10)
+        
+        # Obtener mapeo o usar valores por defecto (Contado/Efectivo)
+        mapping = payment_mapping.get(siigo_payment_code, {'form': 1, 'method': 10, 'name': 'Contado'})
+        
+        # Nombre de la forma de pago desde el XML (campo 0046) o del mapeo
+        payment_name = payment.get('0046', mapping['name']).strip()
         
         return {
-            'payment_form_id': payment_form_id,
-            'payment_method_id': payment_method_id,
+            'payment_form_id': mapping['form'],
+            'payment_method_id': mapping['method'],
+            'payment_name': payment_name,
+            'siigo_code': siigo_payment_code,
             'payment_due_date': self._format_date(payment.get('0051', '')),
             'duration_measure': int(payment.get('1186', 0) or 0),
         }
