@@ -1,0 +1,57 @@
+# Build y distribución
+build/
+dist/
+*.exe
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+*.egg
+
+# Entorno virtual
+venv/
+env/
+.venv/
+.env
+
+# Base de datos local
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de configuración sensibles
+.env
+*.pem
+*.key
+*.crt
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Archivos temporales
+*.tmp
+*.temp
+*.bak
+
+# Archivos XML de prueba
+*.XML
+*.xml
+
+# OS
+.DS_Store
+Thumbs.db

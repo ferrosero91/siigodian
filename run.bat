@@ -1,0 +1,3 @@
+@echo off
+echo Iniciando Siigo DIAN...
+python main.py
