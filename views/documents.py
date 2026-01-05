@@ -1190,13 +1190,17 @@ class DocumentsView:
             return
         
         # Obtener configuración de empresa y resolución
-        from database import Settings
+        from database import Settings, Municipality, Department
         session = get_session()
         settings = session.query(Settings).first()
         resolution = session.query(Resolution).filter(
             Resolution.type_document_id == doc.type_document_id,
             Resolution.prefix == doc.prefix
         ).first()
+        
+        # Obtener municipio y departamento del emisor
+        municipality = session.query(Municipality).get(settings.municipality_id) if settings and settings.municipality_id else None
+        department = session.query(Department).get(settings.department_id) if settings and settings.department_id else None
         
         # Obtener documento de referencia si es NC/ND
         ref_doc = None
@@ -1262,6 +1266,9 @@ class DocumentsView:
         draw_centered(regime_text, FONT, 7)
         if company_address:
             draw_centered(company_address[:45], FONT, 7)
+        # Municipio y Departamento del emisor
+        if municipality and department:
+            draw_centered(f"{municipality.name} - {department.name}", FONT, 7)
         if company_phone:
             draw_centered(f"Tel: {company_phone}", FONT, 7)
         if company_email:
@@ -1541,7 +1548,11 @@ class DocumentsView:
         draw_centered("Modalidad: Software propio", FONT, 6)
         
         # Guardar PDF
-        c.save()
+        try:
+            c.save()
+        except PermissionError:
+            snackbar(self.page, "Cierre el PDF anterior antes de imprimir otro", "warning")
+            return
         
         # Enviar directamente a impresión
         try:
