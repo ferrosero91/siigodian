@@ -1,8 +1,11 @@
-"""Tema oscuro para la aplicación - Estilo Filament"""
+"""Tema claro/oscuro para la aplicación - Estilo Filament"""
 import flet as ft
 
-# Colores del tema (similar a Filament)
-COLORS = {
+# Nombre de la aplicación
+APP_NAME = "FacturaPro"
+
+# Temas disponibles
+DARK_COLORS = {
     "bg_primary": "#111827",      # gray-900
     "bg_secondary": "#1f2937",    # gray-800
     "bg_card": "#1f2937",         # gray-800
@@ -18,6 +21,48 @@ COLORS = {
     "danger": "#ef4444",          # red-500
     "info": "#06b6d4",            # cyan-500
 }
+
+LIGHT_COLORS = {
+    "bg_primary": "#f8fafc",      # slate-50
+    "bg_secondary": "#ffffff",    # white
+    "bg_card": "#ffffff",         # white
+    "bg_hover": "#f1f5f9",        # slate-100
+    "bg_input": "#ffffff",        # white
+    "text_primary": "#1e293b",    # slate-800
+    "text_secondary": "#64748b",  # slate-500
+    "border": "#e2e8f0",          # slate-200
+    "border_focus": "#3b82f6",    # blue-500
+    "primary": "#3b82f6",         # blue-500
+    "success": "#10b981",         # emerald-500
+    "warning": "#f59e0b",         # amber-500
+    "danger": "#ef4444",          # red-500
+    "info": "#06b6d4",            # cyan-500
+}
+
+# Tema actual (por defecto oscuro)
+COLORS = DARK_COLORS.copy()
+_is_dark_mode = True
+
+def is_dark_mode() -> bool:
+    """Retorna si está en modo oscuro"""
+    return _is_dark_mode
+
+def toggle_theme() -> bool:
+    """Cambiar entre tema claro y oscuro. Retorna True si ahora es oscuro."""
+    global COLORS, _is_dark_mode
+    _is_dark_mode = not _is_dark_mode
+    new_colors = DARK_COLORS if _is_dark_mode else LIGHT_COLORS
+    COLORS.clear()
+    COLORS.update(new_colors)
+    return _is_dark_mode
+
+def set_dark_mode(dark: bool):
+    """Establecer modo oscuro o claro"""
+    global COLORS, _is_dark_mode
+    _is_dark_mode = dark
+    new_colors = DARK_COLORS if dark else LIGHT_COLORS
+    COLORS.clear()
+    COLORS.update(new_colors)
 
 
 def get_theme() -> ft.Theme:

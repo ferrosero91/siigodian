@@ -1,12 +1,12 @@
 @echo off
 echo ========================================
-echo   Compilando Siigo DIAN
+echo   Compilando FacturaPro
 echo ========================================
 echo.
 
 REM Verificar que estamos en el directorio correcto
 if not exist main.py (
-    echo ERROR: Ejecute este script desde la carpeta siigo_dian
+    echo ERROR: Ejecute este script desde la carpeta del proyecto
     pause
     exit /b 1
 )
@@ -19,7 +19,7 @@ if exist build rmdir /s /q build
 REM Compilar con PyInstaller
 echo.
 echo Compilando aplicacion...
-pyinstaller SiigoDIAN.spec
+pyinstaller FacturaPro.spec
 
 if %ERRORLEVEL% NEQ 0 (
     echo.
@@ -31,7 +31,7 @@ if %ERRORLEVEL% NEQ 0 (
 echo.
 echo ========================================
 echo   Compilacion exitosa!
-echo   El ejecutable esta en: dist\SiigoDIAN.exe
+echo   El ejecutable esta en: dist\FacturaPro.exe
 echo ========================================
 echo.
 

@@ -4,4 +4,4 @@ from .resolutions import ResolutionsView
 from .customers import CustomersView
 from .products import ProductsView
 from .purchases import PurchasesView
-from .theme import COLORS, get_theme
+from .theme import COLORS, get_theme, toggle_theme, is_dark_mode, APP_NAME

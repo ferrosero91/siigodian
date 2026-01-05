@@ -1,17 +1,17 @@
-# Siigo DIAN - Facturación Electrónica
+# FacturaPro - Facturación Electrónica
 
-Aplicación de escritorio para gestionar facturación electrónica con Siigo y la DIAN.
+Aplicación de escritorio para gestionar facturación electrónica con la DIAN Colombia.
 
 ## Características
 
-- 📄 Escaneo automático de XMLs de Siigo
+- 📄 Escaneo automático de XMLs
 - 📤 Envío de facturas a la DIAN via ApiDian
 - 📝 Creación de Notas Crédito y Notas Débito
 - 📧 Envío de documentos por correo electrónico
 - 📊 Gestión de resoluciones de facturación
 - 🔐 Carga de certificado digital
 - 🌐 Base de datos MySQL para conexión en red (múltiples puntos)
-- 🎨 Interfaz moderna con tema oscuro
+- 🎨 Interfaz moderna con tema claro/oscuro
 
 ## Requisitos
 
@@ -68,25 +68,24 @@ DB_PASSWORD=
 build.bat
 ```
 
-El ejecutable se generará en `dist/SiigoDIAN.exe`
+El ejecutable se generará en `dist/FacturaPro.exe`
 
 ## Estructura
 
 ```
-siigo_dian/
 ├── main.py              # Punto de entrada
 ├── config.py            # Configuración (MySQL)
 ├── database.py          # Modelos SQLAlchemy
 ├── .env                 # Variables de entorno
 ├── services/
-│   ├── xml_parser.py    # Parser de XMLs Siigo
+│   ├── xml_parser.py    # Parser de XMLs
 │   ├── api_dian.py      # Cliente ApiDian
 │   └── folder_watcher.py
 └── views/
     ├── documents.py     # Vista de documentos
     ├── resolutions.py   # Vista de resoluciones
     ├── settings.py      # Vista de configuración
-    └── theme.py         # Tema oscuro
+    └── theme.py         # Tema claro/oscuro
 ```
 
 ## Uso
